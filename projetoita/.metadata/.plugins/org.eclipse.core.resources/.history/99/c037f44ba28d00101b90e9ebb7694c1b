@@ -1,0 +1,128 @@
+package controller;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import connection.DatabaseConnection;
+import dao.EmpresaDAO;
+import dao.UsuarioDAO;
+import model.Empresa;
+import model.Usuario;
+import view.HtmlForm;
+import view.HtmlPage;
+
+public class UsuarioController {
+	private static final Logger logger = Logger.getLogger(UsuarioController.class.getName());
+
+	public void cadastrarForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HtmlPage page = new HtmlPage("Cadastro de Usuário", request.getContextPath());
+		HtmlForm form = new HtmlForm("post", "?action=cadastrarUsuario");
+		page.addToBody("<h1>Cadastrar Usuário</h1>");
+
+		form.addInput("E-mail", "email", "text");
+		form.addInput("Senha", "senha", "password");
+
+		try (Connection conn = DatabaseConnection.getConnection()) {
+			EmpresaDAO empresaDAO = new EmpresaDAO(conn);
+			List<Empresa> empresas = empresaDAO.listar();
+
+			StringBuilder selectHtml = new StringBuilder();
+			selectHtml.append("<label for='id_empresa'>Empresa:</label><br>");
+			selectHtml.append("<select name='id_empresa' required>");
+			for (Empresa empresa : empresas) {
+				selectHtml.append("<option value='").append(empresa.getId()).append("'>").append(empresa.getNomeRazao())
+						.append("</option>");
+			}
+			selectHtml.append("</select><br><br>");
+
+			form.addRawHtml(selectHtml.toString());
+
+		} catch (Exception e) {
+			form.addRawHtml("<p style='color: red;'>Erro ao carregar empresas: " + e.getMessage() + "</p>");
+		}
+
+		form.addButton("Cadastrar");
+		page.addToBody(form.render());
+		response.getWriter().println(page.render());
+	}
+
+	public void cadastrarUsuario(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String email = request.getParameter("email");
+		String senha = request.getParameter("senha");
+		String idEmpresa = request.getParameter("id_empresa");
+		
+		if (email == null || senha == null || idEmpresa == null) {
+			response.getWriter().println("Erro: Parâmetros obrigatórios não fornecidos");
+			return;
+		}
+		
+		Usuario usuario = new Usuario();
+		usuario.setId(UUID.randomUUID().toString());
+		usuario.setEmail(email);
+		usuario.setSenha(senha);
+		usuario.setId_empresa(idEmpresa);
+		usuario.setActive(true);
+
+		try (Connection conn = DatabaseConnection.getConnection()) {
+			UsuarioDAO dao = new UsuarioDAO(conn);
+			dao.cadastrar(usuario);
+			response.sendRedirect("?action=listarUsuarios");
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Erro ao cadastrar usuário", e);
+			response.getWriter().println("Erro: " + e.getMessage());
+		}
+	}
+
+	public void listarUsuarios(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HtmlPage page = new HtmlPage("Lista de Usuários", request.getContextPath());
+		page.addToBody("<h1>Usuários Cadastrados</h1>");
+		try (Connection conn = DatabaseConnection.getConnection()) {
+			UsuarioDAO dao = new UsuarioDAO(conn);
+			List<Usuario> lista = dao.listar();
+
+			StringBuilder tabela = new StringBuilder();
+			tabela.append("<table class='tabela'>");
+			tabela.append("<thead>");
+			tabela.append("<tr>");
+			tabela.append("<th>Email</th>");
+			tabela.append("<th>ID Empresa</th>");
+			tabela.append("<th>Status</th>");
+			tabela.append("</tr>");
+			tabela.append("</thead>");
+			tabela.append("<tbody>");
+
+			for (Usuario u : lista) {
+				tabela.append("<tr>");
+				tabela.append("<td>").append(escapeHtml(u.getEmail())).append("</td>");
+				tabela.append("<td>").append(escapeHtml(u.getId_empresa())).append("</td>");
+				tabela.append("<td>").append(u.getActive() ? "Ativo" : "Inativo").append("</td>");
+				tabela.append("</tr>");
+			}
+
+			tabela.append("</tbody>");
+			tabela.append("</table>");
+			page.addToBody(tabela.toString());
+		} catch (Exception e) {
+			page.addToBody("<p>Erro ao listar usuários: " + e.getMessage() + "</p>");
+		}
+
+		response.getWriter().println(page.render());
+	}
+	
+	private String escapeHtml(String input) {
+		if (input == null) return "";
+		return input.replace("&", "&amp;")
+				.replace("<", "&lt;")
+				.replace(">", "&gt;")
+				.replace("\"", "&quot;")
+				.replace("'", "&#x27;")
+				.replace("/", "&#x2F;");
+	}
+}

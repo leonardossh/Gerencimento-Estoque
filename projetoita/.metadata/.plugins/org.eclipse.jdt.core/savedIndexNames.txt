@@ -1,0 +1,5 @@
+INDEX VERSION 1.134+/home/leonardo-bueno/Downloads/estoque2/.metadata/.plugins/org.eclipse.jdt.core
+39344448.index
+2246418366.index
+1865797976.index
+467623344.index

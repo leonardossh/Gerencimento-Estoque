@@ -1,0 +1,1 @@
+INDEX VERSION 1.4+/home/leonardo-bueno/Downloads/estoque2/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
