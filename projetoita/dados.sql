@@ -62,9 +62,4 @@ CREATE TABLE produtomovimentacao (
 );
 
 
-INSERT INTO empresa (id, nomerazao, cpfcnpj, cidade, estado, ativo) 
-VALUES ('admin-empresa-id', 'Empresa Administradora', '00.000.000/0001-00', 'Cidade Admin', 'Estado Admin', TRUE);
-
-INSERT INTO pessoa (id, email, senha, iddaempresa, ativo) 
-VALUES ('admin-user-id', 'admin', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 'admin-empresa-id', TRUE);
-
+show tables;
