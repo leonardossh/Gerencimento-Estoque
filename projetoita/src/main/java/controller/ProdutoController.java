@@ -78,10 +78,6 @@ public class ProdutoController {
 		formHtml.append("<div class='form-group'>");
 		formHtml.append("<label>Descrição do Produto</label>");
 		formHtml.append("<input type='text' name='descricao' placeholder='Ex: Notebook Dell Inspiron' required>");
-		formHtml.append("</div>");
-		formHtml.append("<div class='form-group'>");
-		formHtml.append("<label>Quantidade</label>");
-		formHtml.append("<input type='number' name='quantidade' placeholder='1' min='1' required>");
 		formHtml.append("</div></div>");
 		
 		// Preços
@@ -172,14 +168,7 @@ public class ProdutoController {
 			return;
 		}
 		
-		if (quantidade == null || quantidade.isBlank()) {
-			try {
-				response.sendRedirect("?action=cadastrarProdutoForm&error=" + java.net.URLEncoder.encode("Quantidade é obrigatória.", "UTF-8"));
-			} catch (Exception e) {
-				response.getWriter().println("Erro de validação");
-			}
-			return;
-		}
+
 		
 		if (valorCusto == null || valorCusto.isBlank()) {
 			try {
@@ -220,7 +209,7 @@ public class ProdutoController {
 		Produto produto = new Produto();
 		produto.setId(UUID.randomUUID().toString());
 		produto.setDescricao(descricao);
-		produto.setQuantidade(quantidade);
+		produto.setQuantidade("0"); // Definindo como 0 por padrão
 		produto.setValorCusto(valorCusto);
 		produto.setValorVenda(valorVenda);
 		produto.setIdEmpresa(idEmpresa);

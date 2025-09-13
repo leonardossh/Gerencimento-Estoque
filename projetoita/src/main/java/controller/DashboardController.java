@@ -1,12 +1,18 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import connection.DatabaseConnection;
+import dao.EmpresaDAO;
+import model.Empresa;
 import model.Pessoa;
 import view.HtmlPage;
 
@@ -14,19 +20,28 @@ public class DashboardController {
 	private static final Logger logger = Logger.getLogger(DashboardController.class.getName());
 
 	public void dashboard(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String contextPath = request.getContextPath();
-
-		HttpSession session = request.getSession(false);
-		Pessoa usuario = (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
-
+		Pessoa usuario = obterUsuarioLogado(request);
 		if (usuario == null) {
 			response.sendRedirect("?action=login");
 			return;
 		}
 
-		HtmlPage page = new HtmlPage("Painel de Controle", contextPath);
-		
-		// CSS limpo sem dependências externas
+		HtmlPage page = criarPaginaDashboard(request.getContextPath());
+		adicionarEstilos(page);
+		adicionarConteudo(page, usuario);
+		response.getWriter().println(page.render());
+	}
+
+	private Pessoa obterUsuarioLogado(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		return (session != null) ? (Pessoa) session.getAttribute("usuarioLogado") : null;
+	}
+
+	private HtmlPage criarPaginaDashboard(String contextPath) {
+		return new HtmlPage("Painel de Controle", contextPath);
+	}
+
+	private void adicionarEstilos(HtmlPage page) {
 		StringBuilder css = new StringBuilder();
 		css.append("<style>");
 		css.append("body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }");
@@ -41,12 +56,36 @@ public class DashboardController {
 		css.append(".logout-btn:hover { background: #c82333; color: white; text-decoration: none; }");
 		css.append("@media (max-width: 768px) { .menu-grid { grid-template-columns: 1fr; } }");
 		css.append("</style>");
-		
 		page.addToBody(css.toString());
+	}
+
+	private void adicionarConteudo(HtmlPage page, Pessoa usuario) {
 		page.addToBody("<div class='dashboard-container'>");
 		page.addToBody("<h1 class='dashboard-title'>Painel de Controle</h1>");
-		page.addToBody("<p class='welcome-text'>Bem-vindo, " + escapeHtml(usuario.getEmail()) + "!</p>");
+		adicionarBoasVindas(page, usuario);
+		adicionarMenuNavegacao(page);
+		adicionarBotaoLogout(page);
+		page.addToBody("</div>");
+	}
 
+	private void adicionarBoasVindas(HtmlPage page, Pessoa usuario) {
+		String nomeEmpresa = obterNomeEmpresa(usuario.getIdDaEmpresa());
+		page.addToBody("<p class='welcome-text'>Bem-vindo, " + escapeHtml(usuario.getEmail()) + "!</p>");
+		page.addToBody("<p class='welcome-text'><strong>" + escapeHtml(nomeEmpresa) + "</strong></p>");
+	}
+
+	private String obterNomeEmpresa(String idEmpresa) {
+		try (Connection conn = DatabaseConnection.getConnection()) {
+			EmpresaDAO empresaDAO = new EmpresaDAO(conn);
+			Empresa empresa = empresaDAO.listarPorId(idEmpresa);
+			return (empresa != null) ? empresa.getNomeRazao() : "Empresa";
+		} catch (SQLException e) {
+			logger.log(Level.WARNING, "Erro ao buscar empresa", e);
+			return "Empresa";
+		}
+	}
+
+	private void adicionarMenuNavegacao(HtmlPage page) {
 		page.addToBody("<div class='menu-grid'>");
 		page.addToBody("<a href='?action=cadastrarProdutoForm' class='menu-btn'>Cadastrar Produto</a>");
 		page.addToBody("<a href='?action=listarProdutos' class='menu-btn'>Listar Produtos</a>");
@@ -57,15 +96,14 @@ public class DashboardController {
 		page.addToBody("<a href='?action=listarUsuarios' class='menu-btn'>Listar Usuarios</a>");
 		page.addToBody("<a href='?action=listarMovimentacoes' class='menu-btn'>Listar Movimentacoes</a>");
 		page.addToBody("</div>");
+	}
 
+	private void adicionarBotaoLogout(HtmlPage page) {
 		page.addToBody("<div class='logout-container'>");
 		page.addToBody("<a href='?action=logout' class='logout-btn'>Sair</a>");
 		page.addToBody("</div>");
-		page.addToBody("</div>");
-
-		response.getWriter().println(page.render());
 	}
-	
+
 	private String escapeHtml(String input) {
 		if (input == null) return "";
 		return input.replace("&", "&amp;")

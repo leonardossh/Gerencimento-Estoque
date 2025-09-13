@@ -11,6 +11,9 @@ public class ProdutoMovimentacao {
 	private boolean active;
 	private String nomeProduto;
 	private String nomeEmpresa;
+	private String cliente;
+	private String idCliente;
+	private String nomeCliente;
 
 	public String getId() {
 		return id;
@@ -90,5 +93,29 @@ public class ProdutoMovimentacao {
 
 	public void setNomeEmpresa(String nomeEmpresa) {
 		this.nomeEmpresa = nomeEmpresa;
+	}
+
+	public String getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(String cliente) {
+		this.cliente = cliente;
+	}
+
+	public String getIdCliente() {
+		return idCliente;
+	}
+
+	public void setIdCliente(String idCliente) {
+		this.idCliente = idCliente;
+	}
+
+	public String getNomeCliente() {
+		return nomeCliente;
+	}
+
+	public void setNomeCliente(String nomeCliente) {
+		this.nomeCliente = nomeCliente;
 	}
 }

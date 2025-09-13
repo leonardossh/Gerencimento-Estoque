@@ -21,8 +21,8 @@ public class ProdutoMovimentacaoDAO {
 
 	public void registrarMovimentacao(ProdutoMovimentacao mov) throws SQLException {
 		String sql = "INSERT INTO produtomovimentacao "
-				+ "(id, id_produto, iddaempresa, quantidade_movimentada, valor_unitario, tipo_movimentacao, tipo, active) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "(id, id_produto, iddaempresa, quantidade_movimentada, valor_unitario, tipo_movimentacao, tipo, active, id_cliente) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, mov.getId());
 			ps.setString(2, mov.getIdProduto());
@@ -32,6 +32,7 @@ public class ProdutoMovimentacaoDAO {
 			ps.setString(6, mov.getTipoMovimentacao());
 			ps.setString(7, mov.getTipo());
 			ps.setBoolean(8, mov.getActive());
+			ps.setString(9, mov.getIdCliente());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Erro ao registrar movimentação", e);
@@ -53,10 +54,11 @@ public class ProdutoMovimentacaoDAO {
 
 	public List<ProdutoMovimentacao> listar() throws SQLException {
 		List<ProdutoMovimentacao> lista = new ArrayList<>();
-		String sql = "SELECT pm.*, p.descricao as produto_nome, e.nomerazao as empresa_nome " +
+		String sql = "SELECT pm.*, p.descricao as produto_nome, e.nomerazao as empresa_nome, pe.email as cliente_nome " +
 					 "FROM produtomovimentacao pm " +
 					 "LEFT JOIN produto p ON pm.id_produto = p.id " +
 					 "LEFT JOIN empresa e ON pm.iddaempresa = e.id " +
+					 "LEFT JOIN pessoa pe ON pm.id_cliente = pe.id " +
 					 "ORDER BY pm.data_movimentacao DESC";
 		try (PreparedStatement ps = conn.prepareStatement(sql);
 			 ResultSet rs = ps.executeQuery()) {
@@ -72,6 +74,8 @@ public class ProdutoMovimentacaoDAO {
 				mov.setTipoMovimentacao(rs.getString("tipo_movimentacao"));
 				mov.setTipo(rs.getString("tipo"));
 				mov.setActive(rs.getBoolean("active"));
+				mov.setIdCliente(rs.getString("id_cliente"));
+				mov.setNomeCliente(rs.getString("cliente_nome"));
 				lista.add(mov);
 			}
 		} catch (SQLException e) {

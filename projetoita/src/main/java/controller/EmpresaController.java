@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import connection.DatabaseConnection;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import dao.EmpresaDAO;
 import dao.PessoaDAO;
 import model.Empresa;
@@ -19,7 +19,6 @@ import model.Pessoa;
 import util.HashUtil;
 import view.HtmlForm;
 import view.HtmlPage;
-import view.HtmlTable;
 
 public class EmpresaController {
 	private static final Logger logger = Logger.getLogger(EmpresaController.class.getName());
