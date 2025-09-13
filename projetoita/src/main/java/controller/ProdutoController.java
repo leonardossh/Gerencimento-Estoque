@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import connection.DatabaseConnection;
 import dao.EmpresaDAO;
-import dao.ProdutoDAO;
 import model.Empresa;
 import model.Produto;
+import service.ProdutoService;
+import util.Conexao;
 import view.HtmlPage;
 
 public class ProdutoController {
@@ -101,7 +101,7 @@ public class ProdutoController {
 		formHtml.append("<input type='number' name='quantidade_estoque' placeholder='0' min='0' required>");
 		formHtml.append("</div></div>");
 
-		try (Connection conn = DatabaseConnection.getConnection()) {
+		try (Connection conn = Conexao.getConnection()) {
 			EmpresaDAO empresaDAO = new EmpresaDAO(conn);
 			List<Empresa> empresas = empresaDAO.listar();
 			
@@ -207,18 +207,16 @@ public class ProdutoController {
 		}
 		
 		Produto produto = new Produto();
-		produto.setId(UUID.randomUUID().toString());
 		produto.setDescricao(descricao);
-		produto.setQuantidade("0"); // Definindo como 0 por padrão
+		produto.setQuantidade("0");
 		produto.setValorCusto(valorCusto);
 		produto.setValorVenda(valorVenda);
 		produto.setIdEmpresa(idEmpresa);
 		produto.setQuantidadeEstoque(quantidadeEstoque);
-		produto.setActive(true);
 
-		try (Connection conn = DatabaseConnection.getConnection()) {
-			ProdutoDAO dao = new ProdutoDAO(conn);
-			dao.cadastrar(produto);
+		try {
+			ProdutoService service = new ProdutoService();
+			service.cadastrar(produto);
 			response.sendRedirect("?action=listarProdutos&success=" + java.net.URLEncoder.encode("Produto cadastrado com sucesso!", "UTF-8"));
 		} catch (SQLException e) {
 			logger.log(Level.SEVERE, "Erro ao cadastrar produto", e);
@@ -255,9 +253,9 @@ public class ProdutoController {
 		listHtml.append("<a href='?action=cadastrarProdutoForm' class='btn-add'>Adicionar Produto</a>");
 		listHtml.append("</div>");
 
-		try (Connection conn = DatabaseConnection.getConnection()) {
-			ProdutoDAO dao = new ProdutoDAO(conn);
-			List<Produto> lista = dao.listar();
+		try {
+			ProdutoService service = new ProdutoService();
+			List<Produto> lista = service.listar();
 
 			if (lista.isEmpty()) {
 				listHtml.append("<div class='empty-state'>");
