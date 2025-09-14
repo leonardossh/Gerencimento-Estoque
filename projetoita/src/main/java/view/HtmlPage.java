@@ -27,7 +27,7 @@ public class HtmlPage {
 	}
 
 	public void addBackButton() {
-		this.body = "<a href='javascript:history.back()' class='back-btn'>Voltar</a>" + this.body;
+		this.body = "<a href='app?action=dashboard' class='back-btn'>Voltar</a>" + this.body;
 	}
 
 	public void addBackButton(String url) {
@@ -37,7 +37,7 @@ public class HtmlPage {
 	public String render() {
 		String backButton = "";
 		if (!title.equals("Login")) {
-			backButton = "<a href='javascript:history.back()' class='back-btn-red'>Voltar</a>";
+			backButton = "<a href='app?action=dashboard' class='back-btn-red'>Voltar</a>";
 		}
 		
 		return "<!DOCTYPE html>\n" + 

@@ -73,23 +73,20 @@ public class ProdutoMovimentacaoController {
 		form.addInput("Quantidade Movimentada", "quantidadeMovimentada", "number");
 		form.addInput("Valor Unitário", "valorUnitario", "number");
 
-		form.addRawHtml("<label>Tipo de Movimentação:</label><br>" + "<select name='tipoMovimentacao' id='tipoMovimentacao' required onchange='toggleClienteField()'>"
+		form.addRawHtml("<label>Tipo de Movimentação:</label><br>" + "<select name='tipoMovimentacao' required>"
 				+ "<option value=''>Selecione o tipo</option>"
 				+ "<option value='compra'>Compra (Entrada)</option>" + "<option value='venda'>Venda (Saída)</option>"
 				+ "</select><br><br>");
 		
-		// Campo de cliente (inicialmente oculto)
-		form.addRawHtml("<div id='clienteField' style='display:none;'>");
-		form.addRawHtml("<label>Cliente:</label><br>");
+		form.addRawHtml("<label>Cliente (apenas para vendas):</label><br>");
 		
-		// Carrega lista de usuários para o select
 		try (Connection connUsuarios = DatabaseConnection.getConnection()) {
 			PessoaDAO pessoaDAO = new PessoaDAO(connUsuarios);
 			List<Pessoa> usuarios = pessoaDAO.listar();
 			
 			StringBuilder selectUsuarios = new StringBuilder();
-			selectUsuarios.append("<select name='cliente' id='clienteSelect'>");
-			selectUsuarios.append("<option value=''>Selecione um cliente</option>");
+			selectUsuarios.append("<select name='cliente'>");
+			selectUsuarios.append("<option value=''>Nenhum (para compras)</option>");
 			for (Pessoa usuario : usuarios) {
 				selectUsuarios.append("<option value='").append(usuario.getId()).append("'>");
 				selectUsuarios.append(usuario.getEmail()).append("</option>");
@@ -100,29 +97,13 @@ public class ProdutoMovimentacaoController {
 			logger.log(Level.SEVERE, "Erro ao carregar usuários", e);
 			form.addRawHtml("<select name='cliente'><option>Erro ao carregar usuários</option></select><br><br>");
 		}
-		
-		form.addRawHtml("</div>");
 
 		form.addButton("Movimentar");
 
 		page.addToBody("<h1>Movimentação de Produto</h1>");
 		page.addToBody(form.render());
 		
-		// JavaScript para mostrar/ocultar campo de cliente
-		page.addToBody("<script>");
-		page.addToBody("function toggleClienteField() {");
-		page.addToBody("  var tipo = document.getElementById('tipoMovimentacao').value;");
-		page.addToBody("  var clienteField = document.getElementById('clienteField');");
-		page.addToBody("  var clienteSelect = document.getElementById('clienteSelect');");
-		page.addToBody("  if (tipo === 'venda') {");
-		page.addToBody("    clienteField.style.display = 'block';");
-		page.addToBody("    if (clienteSelect) clienteSelect.required = true;");
-		page.addToBody("  } else {");
-		page.addToBody("    clienteField.style.display = 'none';");
-		page.addToBody("    if (clienteSelect) clienteSelect.required = false;");
-		page.addToBody("  }");
-		page.addToBody("}");
-		page.addToBody("</script>");
+
 		
 		response.getWriter().println(page.render());
 	}
