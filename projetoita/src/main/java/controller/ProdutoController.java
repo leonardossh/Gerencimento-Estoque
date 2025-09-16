@@ -30,7 +30,7 @@ public class ProdutoController {
 		dashboard.append("<div class='dashboard-card'>");
 		dashboard.append("<h1>Painel de Controle</h1>");
 
-		// Seção de Ações Rápidas
+
 		dashboard.append("<div class='section'>");
 		dashboard.append("<div class='action-grid'>");
 		dashboard.append("<a href='?action=cadastrarProdutoForm' class='action-card add'>");
@@ -45,7 +45,7 @@ public class ProdutoController {
 		
 		dashboard.append("</div></div>");
 		
-		// CSS específico do dashboard
+
 		dashboard.append("<style>");
 		dashboard.append(".dashboard-container { max-width: 1000px; margin: 0 auto; padding: 20px; }");
 		dashboard.append(".dashboard-card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }");
@@ -72,7 +72,7 @@ public class ProdutoController {
 		formHtml.append("<h1>Novo Produto</h1>");
 		formHtml.append("<form method='post' action='?action=cadastrarProduto' class='product-form'>");
 		
-		// Informações básicas
+
 		formHtml.append("<div class='form-section'>");
 		formHtml.append("<h3>Informações Básicas</h3>");
 		formHtml.append("<div class='form-group'>");
@@ -80,7 +80,7 @@ public class ProdutoController {
 		formHtml.append("<input type='text' name='descricao' placeholder='Ex: Notebook Dell Inspiron' required>");
 		formHtml.append("</div></div>");
 		
-		// Preços
+
 		formHtml.append("<div class='form-section'>");
 		formHtml.append("<h3>Preços</h3>");
 		formHtml.append("<div class='form-row'>");
@@ -93,7 +93,7 @@ public class ProdutoController {
 		formHtml.append("<input type='number' name='valorVenda' placeholder='0.00' step='0.01' min='0' required>");
 		formHtml.append("</div></div></div>");
 		
-		// Estoque
+
 		formHtml.append("<div class='form-section'>");
 		formHtml.append("<h3>Estoque</h3>");
 		formHtml.append("<div class='form-group'>");
@@ -113,7 +113,7 @@ public class ProdutoController {
 				return;
 			}
 
-			// Empresa
+
 			formHtml.append("<div class='form-section'>");
 			formHtml.append("<h3>Empresa</h3>");
 			formHtml.append("<div class='form-group'>");
@@ -135,7 +135,7 @@ public class ProdutoController {
 		formHtml.append("<button type='submit' class='btn-submit'>Cadastrar Produto</button>");
 		formHtml.append("</form></div></div>");
 		
-		// CSS específico
+
 		formHtml.append("<style>");
 		formHtml.append(".form-section { margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px; }");
 		formHtml.append(".form-section h3 { margin-bottom: 20px; color: #4a5568; font-size: 1.2rem; }");

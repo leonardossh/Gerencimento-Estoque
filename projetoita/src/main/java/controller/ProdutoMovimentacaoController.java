@@ -169,7 +169,7 @@ public class ProdutoMovimentacaoController {
 			return;
 		}
 		
-		// Validação do cliente para vendas
+
 		if ("venda".equalsIgnoreCase(tipoSelecionado) && (cliente == null || cliente.isBlank())) {
 			try {
 				response.sendRedirect("?action=movimentarProdutoForm&error=" + java.net.URLEncoder.encode("Cliente é obrigatório para vendas.", "UTF-8"));
@@ -195,11 +195,11 @@ public class ProdutoMovimentacaoController {
 
 		mov.setTipoMovimentacao(tipoSelecionado);
 		mov.setTipo(tipoEnum);
-		// Define ID do cliente apenas para vendas
+
 		if ("venda".equalsIgnoreCase(tipoSelecionado)) {
 			mov.setIdCliente(cliente);
 		} else {
-			mov.setIdCliente(null); // NULL para compras
+			mov.setIdCliente(null);
 		}
 		mov.setActive(true);
 
@@ -291,7 +291,7 @@ public class ProdutoMovimentacaoController {
 					listHtml.append("<span class='value'>").append(escapeHtml(mov.getTipo())).append("</span>");
 					listHtml.append("</div>");
 					
-					// Mostra cliente apenas para vendas
+
 					if ("venda".equalsIgnoreCase(mov.getTipoMovimentacao()) && mov.getNomeCliente() != null && !mov.getNomeCliente().isBlank()) {
 						listHtml.append("<div class='info-item'>");
 						listHtml.append("<span class='label'>Cliente:</span>");

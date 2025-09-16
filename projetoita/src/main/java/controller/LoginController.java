@@ -32,7 +32,7 @@ public class LoginController {
 
 		page.addToBody(form.render());
 
-		// Link para cadastro caso não tenha conta
+
 		page.addToBody(
 				"<div style='text-align: center; margin-top: 20px;'><p style='color: #4a5568; margin-bottom: 15px;'>Não tem cadastro?</p><a href='?action=cadastrarEmpresaForm' class='menu-item' style='display: inline-block; padding: 15px 30px; margin: 0;'>Cadastrar Nova Empresa</a></div>");
 
@@ -63,13 +63,13 @@ public class LoginController {
 					HttpSession session = request.getSession();
 					session.setAttribute("usuarioLogado", u);
 
-					// Redireciona para dashboard após login bem-sucedido
+
 					response.sendRedirect("?action=dashboard");
 					return;
 				}
 			}
 
-			// Login inválido - redireciona com erro para mostrar popup
+
 			try {
 				response.sendRedirect("?action=login&error=" + java.net.URLEncoder.encode("Email ou senha incorretos.", "UTF-8"));
 			} catch (Exception e) {

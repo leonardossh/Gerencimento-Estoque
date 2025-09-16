@@ -21,7 +21,7 @@ public class UsuarioDAO {
 	}
 
 	public void cadastrar(Usuario usuario) throws SQLException {
-		// Gerar ID se não existir
+
 		if (usuario.getId() == null || usuario.getId().isEmpty()) {
 			usuario.setId(UUID.randomUUID().toString());
 		}
